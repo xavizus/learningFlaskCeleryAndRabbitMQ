@@ -1,0 +1,1 @@
+# Flask, celery and RabbitMQ learning
