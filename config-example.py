@@ -1,2 +1,2 @@
-RABBITMQ = 'amqp://'
-RESULT_BACKEND = 'rpc://'
+BROKER_URL='pyamqp://'
+BACKEND_URL='rpc://'
