@@ -122,3 +122,78 @@ celery.conf.beat_schedule = {
         },
     }
 ```
+
+# Logging
+In this project I am going to use logstash (ELK-stack) and the console as loghandlers. All logging code are in the file flaskLogger.
+In Flask, there is already an [logger](https://flask.palletsprojects.com/en/1.1.x/logging/), which I will use and append with `logstash.TCPLogstashHandler(host, port, version=1, message_type=appName)`.
+In Flask, there are two events called "after_request" and "before_request" that I could use, and I find after_request most usefull. This mean I don't need to write a log entry in every route. Though I could still do normal logging by using `app.logger.debug/info/warning/error/critical`.
+
+# Supervisors
+There are mutilple supervisors in the wild, the most common one is systemd which is standard in most Linux distros.
+Therefore I need some information on how to deploy an / multiple app(s) with systemd in mind.
+
+## Systemd
+To create a process, you need to create a unit-file in the folder /etc/systemd/system/*filename*.service
+```
+[Unit]
+Description="Flask, celery and RabbitMQ learning app"
+After=network.target
+
+[Service]
+User=someUser
+Group=someGroup
+ExecStart=/path/tp/start
+[Install]
+WantedBy=multi-user.target
+```
+If I would like to controll two services at once, but still independent of each other, you can use the "wants" command:
+`apps.service`
+```
+[Unit]
+After=network.target
+Wants=first.service second.service
+[Install]
+WantedBy=multi-user.target
+```
+In order to use above code, you need to change your target on your Unit, by adding PartOf:
+```
+[Unit]
+Description="Flask, celery and RabbitMQ learning app"
+After=network.target
+PartOf=first.target
+
+[Service]
+User=someUser
+Group=someGroup
+ExecStart=/path/tp/start
+[Install]
+WantedBy=multi-user.target
+```
+
+To use the service, you use the command: `systemctl status/stop/start/restart apps.service`
+
+## Supervisord
+There is also another common supervisor, called supervisord.
+It's quite easy to add a service to supervisord.
+In the file supervisord.conf, you can add the following:
+```
+[program:firstApp]
+command=/path/to/your/startFile/
+user=yourUser
+```
+To controll multiple apps at the same time (independent of eachother)
+```
+[program:firstApp]
+command=/path/to/your/startFile/
+user=yourUser
+
+[program:secondApp]
+command=/path/to/your/startFile/
+user=yourUser
+
+[group:apps]
+programs=firstApp,secondApp
+```
+To start the apps, you just use: `supervisorctl status/stop/start/restart apps:*`
+
+#

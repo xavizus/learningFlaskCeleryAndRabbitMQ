@@ -1,2 +1,5 @@
 BROKER_URL='pyamqp://'
 BACKEND_URL='rpc://'
+LOG_HOST=""
+LOG_PORT=0
+LOG_APP_NAME=""
