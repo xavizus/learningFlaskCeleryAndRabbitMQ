@@ -1,57 +1,28 @@
+import importlib
 
-class databaseFactory:
-    databaseType = None
-
-    databaseName = None
-
-    serverAddress = None
-
-    serverPort = None
-
-    username = None
-
-    password = None
-
-    required = (
-        'DB_TYPE'
-        'DB_DATABASE',
-        'DB_HOST',
-        'DB_PORT',
-        'DB_USER',
-        'DB_PASS'
-    )
-
+class DatabaseFactory:
     VALIDDATABASETYPES = {
-        "mysql",
-        "mssql",
-        "mariadb",
-        "mongodb"
+        "mysql": ('DB_TYPE', 'DB_DATABASE', 'DB_HOST', 'DB_USER', 'DB_PASS'),
+        "mssql": None,
+        "mariadb": None,
+        "mongodb": None
     }
 
-    def __init__(self, db):
-        self.initilize(db)
-        print(f"Database Type: {self.databaseType}")
-        pass
-
-    def initilize(self, db):
-        if db['DB_TYPE'] not in self.VALIDDATABASETYPES:
+    def __new__(cls, db):
+        if db['DB_TYPE'] not in cls.VALIDDATABASETYPES:
             raise Exception(f"Databasetype is invalid. Databasetype supplied: {db['DB_TYPE']}")
 
-        missingRequired = []
-        for require in self.required:
-            if db[require] is None:
-                missingRequired.append(require)
-        
-        if missingRequired:
-            message = "There are some missing parameters in your config file. Missing following keys: "
-            for missing in missingRequired:
-                message += f"{missing}, "
+        missing_required = []
+        for require in cls.VALIDDATABASETYPES[db['DB_TYPE']]:
+            if not db.get(require):
+                missing_required.append(require)
+        if missing_required:
+            message = """There are some missing parameters in your
+             config file. Missing following keys: """
+            for key in missing_required:
+                message += f"{key}, "
             raise Exception(message)
 
-        self.databaseType = db['DB_TYPE']
-        self.databaseName = db['DB_DATABASE']
-        self.serverAddress = db['DB_HOST']
-        self.serverPort = db['DB_PORT']
-        self.username = db['DB_USER']
-        self.password = db['DB_PASS']
-        
+        module = importlib.import_module("dbFactory.db"+db['DB_TYPE'])
+        class_ = getattr(module, 'DB'+db['DB_TYPE'])
+        return class_(db)

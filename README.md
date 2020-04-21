@@ -196,4 +196,6 @@ programs=firstApp,secondApp
 ```
 To start the apps, you just use: `supervisorctl status/stop/start/restart apps:*`
 
-#
+# Python factory
+In the file /dbFactory/dbFactory.py, I am not using \__init__() function, because when you call init, the object dbFactory has already been created. Instead we call \__new__() this is called before \__init__(). Which make it possible to create another class than the one we call. 
+The negative part of doing it this way, pylint can't resolve the actually class that's been loaded in runtime. Therefore you get the error "No-member".
