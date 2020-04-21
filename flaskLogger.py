@@ -4,21 +4,38 @@ import logstash
 
 class FlaskLogger(object):
 
+    REQUIRED = (
+        "LOG_HOST",
+        "LOG_PORT",
+        "LOG_APP_NAME"
+    )
+
     def __init__(self, app=None):
         # Make sure that we got an app.
         if app is not None:
             self.initApp(app)
 
     def initApp(self, app):
+
+        # Controll that the requried config settings exist.
+        missing_requried = []
+        for require in self.REQUIRED:
+            if not app.config.get(require):
+                missing_requried.append(require)
+        
+        if missing_requried:
+            message = "FlaskLogger require following: "
+            for missing in missing_requried[:-1]:
+                message += f"{missing}, "
+            else:
+                message += f"{missing_requried[-1]} in config."
+            raise Exception(message)
+
         # setup variables
         self.host = app.config.get("LOG_HOST")
         self.port = app.config.get("LOG_PORT")
         self.appName = app.config.get("LOG_APP_NAME")
 
-        # Check if we are missing any config.
-        if not self.host or not self.port or not self.appName:
-            raise Exception("Required LOG_HOST, LOG_PORT and LOG_APP_NAME in config")
-        
         # Clear all current handlers
         app.logger.handlers = []
         # Temporary holder of handlers

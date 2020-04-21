@@ -128,6 +128,27 @@ In this project I am going to use logstash (ELK-stack) and the console as loghan
 In Flask, there is already an [logger](https://flask.palletsprojects.com/en/1.1.x/logging/), which I will use and append with `logstash.TCPLogstashHandler(host, port, version=1, message_type=appName)`.
 In Flask, there are two events called "after_request" and "before_request" that I could use, and I find after_request most usefull. This mean I don't need to write a log entry in every route. Though I could still do normal logging by using `app.logger.debug/info/warning/error/critical`.
 
+An important note, is that this application send its logs to a logstash server.
+In my logstash server I've added a file in `/etc/logstash/conf.d/20-learning.conf` with the following content:
+```
+input {
+  tcp {
+    port => 5050
+    type => flask
+    codec => json
+  }
+}
+output {
+        elasticsearch {
+                hosts => ["localhost:9200"]
+                index => "20-learning"
+                document_type => "learning-type"
+                template_name => "learning-template"
+        }
+}
+
+```
+
 # Supervisors
 There are mutilple supervisors in the wild, the most common one is systemd which is standard in most Linux distros.
 Therefore I need some information on how to deploy an / multiple app(s) with systemd in mind.

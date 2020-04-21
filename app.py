@@ -5,7 +5,7 @@ from flaskLogger import FlaskLogger
 import logging
 import logstash
 import sys
-from dbFactory.dbFactory import databaseFactory
+from dbFactory.dbFactory import DatabaseFactory
 import random
 import string
 
@@ -22,7 +22,7 @@ def hello_world():
         # Get db config
         dbInfo = app.config.get("DB")
         # Get a database class from factory
-        database = databaseFactory(dbInfo)
+        database = DatabaseFactory(dbInfo)
         # Connect to database
         database.connect()
         sql = f"INSERT INTO `test` (name, description)  VALUES ('{randomString()}', '{randomString(15)}')"
