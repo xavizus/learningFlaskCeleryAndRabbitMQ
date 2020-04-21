@@ -1,5 +1,5 @@
 Todos:
-    ☐ Flask-MySQL Database connection MySQL (Eventually create a Database Factory)
+    ✔ Flask-MySQL Database connection MySQL (Eventually create a Database Factory) @done(20-04-21 12:02)
     ☐ JWT (Json Web Tokens) for Authentication
     ☐ Templete Engine Jinja2
     ☐ Flask-LDAP for Active Directory

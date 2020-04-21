@@ -1,10 +1,13 @@
-BROKER_URL='pyamqp://'
-BACKEND_URL='rpc://'
-LOG_HOST=""
-LOG_PORT=0
-LOG_APP_NAME=""
-DB_USER=""
-DB_PASS=""
-DB_PORT=3306
-DB_DATABASE=""
-DB_HOST=""
+RABBITMQ = ''
+RESULT_BACKEND = ''
+LOG_HOST=''
+LOG_PORT= 5000
+LOG_APP_NAME=''
+DB = {
+    "DB_USER": "",
+    "DB_PASS": "",
+    "DB_PORT": 3306,
+    "DB_DATABASE": "",
+    "DB_HOST": "",
+    "DB_TYPE": "mysql"
+}
